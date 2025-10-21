@@ -12,7 +12,8 @@ services:
       - php
 
   php:
-    build: .
+    build:
+      context: ./php
     volumes:
       - ./src:/var/www/html
 
