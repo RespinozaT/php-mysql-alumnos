@@ -1,12 +1,14 @@
 # -----------------------------
-# Dockerfile final para Render
+# Dockerfile completo para Render
 # -----------------------------
 FROM php:8.2-apache
 
 # -----------------------------
-# Instalar extensiones necesarias
+# Instalar extensiones y utilidades necesarias
 # -----------------------------
-RUN apt-get update && apt-get install -y libpq-dev \
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gettext-base \
     && docker-php-ext-install pdo pdo_pgsql
 
 # -----------------------------
@@ -27,8 +29,6 @@ RUN a2enmod rewrite \
 EXPOSE 10000
 
 # -----------------------------
-# Iniciar Apache con puerto dinámico
+# Iniciar Apache con puerto dinámico usando envsubst
 # -----------------------------
-# Render define la variable de entorno $PORT
-# Reemplazamos el puerto de Apache dinámicamente antes de arrancar
 CMD envsubst '$PORT' < /etc/apache2/sites-available/000-default.conf > /etc/apache2/sites-enabled/000-default.conf && apache2-foreground
