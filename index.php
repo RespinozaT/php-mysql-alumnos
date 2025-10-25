@@ -5,7 +5,7 @@
 $host = getenv('DB_HOST') ?: 'localhost';
 $db   = getenv('DB_NAME') ?: 'miapp_db';
 $user = getenv('DB_USER') ?: 'miapp_user';
-$pass = getenv('DB_PASS') ?: 'password';
+$pass = getenv('DB_PASSWORD') ?: 'password';
 $port = getenv('DB_PORT') ?: 5432;
 
 try {
