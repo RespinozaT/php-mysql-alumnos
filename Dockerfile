@@ -1,15 +1,41 @@
+# -----------------------------
+# Dockerfile para Render: PHP + Apache + PostgreSQL
+# -----------------------------
 FROM php:8.2-apache
 
-# Instala extensiones necesarias
-RUN docker-php-ext-install pdo pdo_mysql
+# -----------------------------
+# Variables de entorno
+# -----------------------------
+# Render inyecta el puerto dinámico
+ENV PORT=10000
 
-# Copia los archivos del proyecto
+# -----------------------------
+# Instalar extensiones de PHP necesarias
+# -----------------------------
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
+
+# -----------------------------
+# Copiar la aplicación
+# -----------------------------
+WORKDIR /var/www/html
 COPY . /var/www/html/
 
-ENV PORT=10000
-EXPOSE 10000
+# -----------------------------
+# Configurar Apache para Render
+# -----------------------------
+# Cambiar el puerto de Apache al que Render asigna
+RUN sed -i "s/80/${PORT}/g" /etc/apache2/sites-available/000-default.conf \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Cambiar Apache para que escuche en $PORT
-RUN sed -i "s/80/\${PORT}/g" /etc/apache2/sites-available/000-default.conf
+# Habilitar mod_rewrite si usas URLs amigables
+RUN a2enmod rewrite
 
+# Exponer el puerto que Render usará
+EXPOSE ${PORT}
+
+# -----------------------------
+# Iniciar Apache en primer plano
+# -----------------------------
 CMD ["apache2-foreground"]
